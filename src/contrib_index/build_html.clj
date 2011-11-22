@@ -112,8 +112,8 @@ vars in project-info that begin with that letter"
                (make-index-content (vars-by-letter vars))))
 
 (defn make-all-pages 
-  ([project-info except]
+  ([project-info]
      (let [master-toc (make-master-toc project-info)]
        ;(make-overview ns-info master-toc)
-       (make-index-html (flatten-vars project-info except) master-toc))))
+       (make-index-html (flatten-vars project-info) master-toc))))
 

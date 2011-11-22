@@ -57,15 +57,12 @@ top-level namespace"
 
 (defn flatten-vars
   "From a vector of indices by repo create a flat list of variables each with the
-repo name added on a :project key. The optional second argument ignore is a set of repos
-to ignore."
-  ([indices] (flatten-vars indices nil))
-  ([indices ignore]
-     (let [ignore (or ignore #{})]
-       (apply concat
-              (for [[project data] indices :when (not (ignore project))]
-                (do
-                  (for [v (:vars data)]
-                    (assoc v
-                      :project project
-                      :one-namespace? (one-namespace? data)))))))))
+repo name added on a :project key."
+  ([indices]
+     (apply concat
+            (for [[project data] indices]
+              (do
+                (for [v (:vars data)]
+                  (assoc v
+                    :project project
+                    :one-namespace? (one-namespace? data))))))))

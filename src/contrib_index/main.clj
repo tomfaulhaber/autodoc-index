@@ -3,4 +3,5 @@
         [contrib-index.build-html :only [make-all-pages]]))
 
 (defn -main []
-  (make-all-pages (all-indices-by-repo "clojure" true) #{"clojure-contrib"}))
+  (make-all-pages (filter #(not (#{"clojure-contrib"} (first %)))
+                          (all-indices-by-repo "clojure" true))))

@@ -52,6 +52,76 @@ global index files."
                                                  (str "http://clojure.github.com/" project "/"))
                                                 (content project)))))))
 
+;; (defn namespace-overview [ns template]
+;;   (at template
+;;     [:#namespace-tag] 
+;;     (do->
+;;      (set-attr :id (:short-name ns))
+;;      (content (:short-name ns)))
+;;     [:#author-line] (when (:author ns)
+;;                  #(at % [:#author-name] 
+;;                       (content (:author ns))))
+;;     [:a#api-link] (set-attr :href (ns-html-file ns))
+;;     [:pre#namespace-docstr] (content (expand-links (:doc ns)))
+;;     [:span#var-link] (add-ns-vars ns)
+;;     [:span#subspace] (if-let [subspaces (seq (:subspaces ns))]
+;;                        (clone-for [s subspaces]
+;;                          #(at % 
+;;                             [:span#name] (content (:short-name s))
+;;                             [:span#sub-var-link] (add-ns-vars s))))
+;;     [:span#see-also] (see-also-links ns)
+;;     [:.ns-added] (when (:added ns)
+;;                    #(at % [:#content]
+;;                         (content (str "Added in " (params :name)
+;;                                       " version " (:added ns)))))
+;;     [:.ns-deprecated] (when (:deprecated ns)
+;;                         #(at % [:#content]
+;;                              (content (str "Deprecated since " (params :name)
+;;                                            " version " (:deprecated ns)))))))
+
+;;; TODO: implement expand-links
+(defn expand-links [s] s)
+
+(defn namespace-overview [ns template]
+  (at template
+      [:.namespace-name] 
+      (do->
+       (content (:name ns)))
+      [:.author-line] (when (:author ns)
+                        #(at % [:.author-name] 
+                             (content (:author ns))))
+      [:pre.namespace-docstr] (content (expand-links (:doc ns)))
+      [:.ns-added] (when (:added ns)
+                     #(at % [:#content]
+                          (content (str "Added in version " (:added ns)))))
+      [:.ns-deprecated] (when (:deprecated ns)
+                          #(at % [:#content]
+                               (content (str "Deprecated since version " (:deprecated ns)))))))
+
+(defsnippet make-overview-content overview-file-template
+  [root]
+  [project-info]
+  [:div.project-entry] (clone-for [[project {:keys [namespaces description] :as data}]
+                                   (filter second project-info)]
+                                  #(at %
+                                       [:.project-tag] (content project)
+                                       [:.project-description] description
+                                       [:.api-link] (do->
+                                                     (set-attr
+                                                      :href
+                                                      (str "http://clojure.github.com/" project "/"))
+                                                     (content project))
+                                       [:div.namespace-entry] (clone-for [ns namespaces]
+                                                                         (fn [node]
+                                                                           (namespace-overview ns node))))))
+
+(defn make-overview [project-info master-toc]
+  (create-page "index.html"
+               "Clojure Library Overview"
+               master-toc
+               nil
+               (make-overview-content project-info)))
+
 (defn vars-by-letter 
   "Produce a lazy seq of two-vectors containing the letters A-Z and Other with all the 
 vars in project-info that begin with that letter"
@@ -114,6 +184,6 @@ vars in project-info that begin with that letter"
 (defn make-all-pages 
   ([project-info]
      (let [master-toc (make-master-toc project-info)]
-       ;(make-overview ns-info master-toc)
+       (make-overview project-info master-toc)
        (make-index-html (flatten-vars project-info) master-toc))))
 

@@ -1,4 +1,4 @@
-(ns contrib-index.build-html
+(ns autodoc-index.build-html
   "A stripped down version of autodoc's build-html that is designed just to build the
 global index files."
   (:refer-clojure :exclude [empty complement]) 
@@ -9,7 +9,7 @@ global index files."
   (:use [net.cgrand.enlive-html]
         [clojure.java.io :only (as-file file writer)]
         [clojure.pprint :only (pprint cl-format)]
-        [contrib-index.indices :only (flatten-vars)]))
+        [autodoc-index.indices :only (flatten-vars)]))
 
 (def template-directory "templates/")
 (def layout-file (str template-directory "layout.html"))

@@ -1,4 +1,4 @@
-(ns contrib-index.indices
+(ns autodoc-index.indices
   "A sandbox for playing with the code that we'll use for creating indices"
   (:require [clj-http.client :as client]
             [clj-json.core :as json])

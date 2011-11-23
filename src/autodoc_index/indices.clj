@@ -1,5 +1,5 @@
 (ns autodoc-index.indices
-  "A sandbox for playing with the code that we'll use for creating indices"
+  "Code for accessing github and building an index of all autodoc for an organization"
   (:require [clj-http.client :as client]
             [clj-json.core :as json])
   (:use [clojure.pprint :only [cl-format]]))

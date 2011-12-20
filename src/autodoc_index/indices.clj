@@ -45,7 +45,7 @@
   (for [repo  (sort (repos (user-url user org?)))]
     [repo (index-file user repo) ]))
 
-(defn- one-namespace?
+(defn one-namespace?
   "Takes a list of namespaces and returns true if there's only a single
 top-level namespace"
   [data]

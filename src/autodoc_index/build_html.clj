@@ -9,7 +9,7 @@ global index files."
   (:use [net.cgrand.enlive-html]
         [clojure.java.io :only (as-file file writer)]
         [clojure.pprint :only (pprint cl-format)]
-        [autodoc-index.indices :only (flatten-vars)]))
+        [autodoc-index.indices :only (flatten-vars one-namespace?)]))
 
 (def template-directory "templates/")
 (def layout-file (str template-directory "layout.html"))
@@ -82,10 +82,12 @@ global index files."
 ;;; TODO: implement expand-links
 (defn expand-links [s] s)
 
-(defn namespace-overview [ns template]
+(defn namespace-overview [project ns one-namespace? template]
   (at template
-      [:.namespace-name] 
+      [:.namespace-name :a] 
       (do->
+       (set-attr :href (str "http://clojure.github.com/" project "/"
+                            (if one-namespace? "index.html" (str (:name ns) "-api.html"))))
        (content (:name ns)))
       [:.author-line] (when (:author ns)
                         #(at % [:.author-name] 
@@ -101,19 +103,18 @@ global index files."
 (defsnippet make-overview-content overview-file-template
   [root]
   [project-info]
-  [:div.project-entry] (clone-for [[project {:keys [namespaces description] :as data}]
-                                   (filter second project-info)]
-                                  #(at %
-                                       [:.project-tag] (content project)
-                                       [:.project-description] description
-                                       [:.api-link] (do->
-                                                     (set-attr
-                                                      :href
-                                                      (str "http://clojure.github.com/" project "/"))
-                                                     (content project))
-                                       [:div.namespace-entry] (clone-for [ns namespaces]
-                                                                         (fn [node]
-                                                                           (namespace-overview ns node))))))
+  [:div.project-entry]
+  (clone-for [[project {:keys [namespaces description] :as data}]
+              (filter second project-info)]
+             #(let [single? (one-namespace? data)]
+                (at %
+                    [:.project-tag] (content project)
+                    [:.project-description] description
+                    [:.api-link] (set-attr :href (str "http://clojure.github.com/" project "/"))
+                    [:div.namespace-entry] (clone-for
+                                            [ns namespaces]
+                                            (fn [node]
+                                              (namespace-overview project ns single? node)))))))
 
 (defn make-overview [project-info master-toc]
   (create-page "index.html"

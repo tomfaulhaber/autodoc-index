@@ -1,7 +1,7 @@
 (ns autodoc-index.indices
   "Code for accessing github and building an index of all autodoc for an organization"
   (:require [clj-http.client :as client]
-            [clj-json.core :as json])
+            [clojure.data.json :as json])
   (:use [clojure.pprint :only [cl-format]]))
 
 (defn user-url
@@ -12,32 +12,37 @@
 (defn repos
   [base]
   (let [url (str base "/repos") 
-        result (-> (client/get url {:accept :json}) :body json/parse-string)]
-    (for [r result] (get r "name"))))
+        result (-> (client/get url {:accept :json}) :body
+                   (#(java.io.StringReader. %)) json/read-json)]
+    (for [r result] (:name r))))
 
 (defn branches [user repo]
   (let [url (cl-format nil "https://api.github.com/repos/~a/~a/branches" user repo)]
-   (for [r (-> (client/get url {:accept :json}) :body json/parse-string)]
-     (get r "name"))))
+   (for [r (-> (client/get url {:accept :json}) :body
+               (#(java.io.StringReader. %)) json/read-json)]
+     (:name r))))
 
 (defn gh-pages-sha [user repo]
+  (binding [*out* *err*] (println "gh-pages-sha" user repo))
   (let [url (cl-format nil "https://api.github.com/repos/~a/~a/branches" user repo)
-        branches (-> (client/get url {:accept :json}) :body json/parse-string)]
-   (when-let [branch (first (filter #(= "gh-pages" (get % "name")) branches)) ]
-     (get-in branch ["commit" "sha"]))))
+        branches (-> (client/get url {:accept :json}) :body
+                     (#(java.io.StringReader. %)) json/read-json)]
+   (when-let [branch (first (filter #(= "gh-pages" (:name %)) branches)) ]
+     (get-in branch [:commit :sha]))))
 
 
 (defn index-file [user repo]
   (when-let [sha (gh-pages-sha user repo)]
     (let [url (cl-format nil "https://api.github.com/repos/~a/~a/git/trees/~a" user repo sha)
-          result (-> (client/get url {:accept :json}) :body json/parse-string)
-          tree (get result "tree")]
+          result (-> (client/get url {:accept :json}) :body
+                     (#(java.io.StringReader. %)) json/read-json)
+          tree (:tree result)]
       (when-let [file-desc (last
-                            (sort-by #(get % "path")
+                            (sort-by :path
                                      (filter #(re-matches #"^index-.*\.clj$"
-                                                          (get % "path"))
+                                                          (:path %))
                                              tree)))]
-        (let [file-url (get file-desc "url")]
+        (let [file-url (:url file-desc)]
           (-> (client/get file-url {:accept "application/vnd.github.beta.raw"})
               :body read-string))))))
 

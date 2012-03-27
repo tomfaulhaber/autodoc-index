@@ -138,13 +138,14 @@ vars in project-info that begin with that letter"
 
 (defn doc-prefix [v n]
   "Get a prefix of the doc string suitable for use in an index"
-  (let [doc (:doc v)
-        len (min (count doc) n)
-        suffix (if (< len (count doc)) "..." ".")]
-    (str (.replaceAll 
-          (.replaceFirst (.substring doc 0 len) "^[ \n]*" "")
-          "\n *" " ")
-         suffix)))
+  (if-let [doc (:doc v)]
+    (let [len (min (count doc) n)
+          suffix (if (< len (count doc)) "..." ".")]
+      (str (.replaceAll 
+            (.replaceFirst (.substring doc 0 len) "^[ \n]*" "")
+            "\n *" " ")
+           suffix))
+    ""))
 
 (defn gen-index-line [v]
   (let [var-name (:name v)

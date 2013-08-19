@@ -162,8 +162,10 @@ vars in project-info that begin with that letter"
          [:#line-content] (content 
                            (cl-format nil "~vt~a~vt~a~vt~a~%"
                                       (- 29 overhead)
-                                      (:var-type v) (- 43 overhead)
-                                      (:project v) (- 62 overhead)
+                                      (str (when (:dynamic v) "dynamic ") (:var-type v))
+                                      (- 43 overhead)
+                                      (:project v)
+                                      (- 62 overhead)
                                       (doc-prefix v doc-len))))))
 
 ;; TODO: skip entries for letters with no members

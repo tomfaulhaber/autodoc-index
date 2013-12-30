@@ -1,7 +1,7 @@
 # An Indexer for Autodoc Data
 When a user or organization has a number of projects that are documented using the autodoc system ([https://github.com/tomfaulhaber/autodoc]()), this project can be used to create a master overview and index. 
 
-This is currently being used to document the Clojure core and contrib libraries and you can see the results at [http://clojure.github.com]().
+This is currently being used to document the Clojure core and contrib libraries and you can see the results at [http://clojure.github.io]().
 
 I have not yet completely generalized this program and don't have any immediate plans to. On the other hand, it ought to be pretty easy to adapt it to your project. Just keep in mind that the Clojure logo and such are copyrighted by Rich Hickey and you'll need to get his permission to use them for uses other than Clojure itself.
 

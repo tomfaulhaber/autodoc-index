@@ -22,7 +22,7 @@ global index files."
 (def overview-file-template (str template-directory overview-file))
 (def index-html-file-template (str template-directory index-html-file))
 
-(def output-directory "../autodoc-work-area/clojure.github.com")
+(def output-directory "../autodoc-work-area/clojure.github.io")
 
 (deftemplate page layout-file
   [title master-toc local-toc page-content]
@@ -49,7 +49,7 @@ global index files."
                                           [:a] (do->
                                                 (set-attr
                                                  :href
-                                                 (str "http://clojure.github.com/" project "/"))
+                                                 (str "http://clojure.github.io/" project "/"))
                                                 (content project)))))))
 
 ;; (defn namespace-overview [ns template]
@@ -86,7 +86,7 @@ global index files."
   (at template
       [:.namespace-name :a] 
       (do->
-       (set-attr :href (str "http://clojure.github.com/" project "/"
+       (set-attr :href (str "http://clojure.github.io/" project "/"
                             (if one-namespace? "index.html" (str (:name ns) "-api.html"))))
        (content (:name ns)))
       [:.author-line] (when (:author ns)
@@ -110,7 +110,7 @@ global index files."
                 (at %
                     [:.project-tag] (content project)
                     [:.project-description] description
-                    [:.api-link] (set-attr :href (str "http://clojure.github.com/" project "/"))
+                    [:.api-link] (set-attr :href (str "http://clojure.github.io/" project "/"))
                     [:div.namespace-entry] (clone-for
                                             [ns namespaces]
                                             (fn [node]
@@ -155,7 +155,7 @@ vars in project-info that begin with that letter"
     #(at %
          [:a] (do->
                (set-attr :href
-                         (str "http://clojure.github.com/" (:project v) "/"
+                         (str "http://clojure.github.io/" (:project v) "/"
                               (if (:one-namespace? v) "index.html" (str ns-name "-api.html"))
                               "#" ns-name "/" (:name v)))
                (content (:name v)))

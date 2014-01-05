@@ -1,7 +1,7 @@
 (ns autodoc-index.build-html
   "A stripped down version of autodoc's build-html that is designed just to build the
 global index files."
-  (:refer-clojure :exclude [empty complement]) 
+  (:refer-clojure :exclude [empty complement])
   (:import [java.util.jar JarFile]
            [java.io File FileWriter BufferedWriter StringReader]
            [java.util.regex Pattern])
@@ -33,7 +33,7 @@ global index files."
   [:div#content-tag] (content page-content))
 
 (defn create-page [output-file title master-toc local-toc page-content]
-  (with-open [out  (writer (file output-directory output-file))] 
+  (with-open [out  (writer (file output-directory output-file))]
     (binding [*out* out]
       (print
        (apply str (page title master-toc local-toc page-content))))))
@@ -49,24 +49,24 @@ global index files."
                                           [:a] (do->
                                                 (set-attr
                                                  :href
-                                                 (str "http://clojure.github.com/" project "/"))
+                                                 (str "http://clojure.github.io/" project "/"))
                                                 (content project)))))))
 
 ;; (defn namespace-overview [ns template]
 ;;   (at template
-;;     [:#namespace-tag] 
+;;     [:#namespace-tag]
 ;;     (do->
 ;;      (set-attr :id (:short-name ns))
 ;;      (content (:short-name ns)))
 ;;     [:#author-line] (when (:author ns)
-;;                  #(at % [:#author-name] 
+;;                  #(at % [:#author-name]
 ;;                       (content (:author ns))))
 ;;     [:a#api-link] (set-attr :href (ns-html-file ns))
 ;;     [:pre#namespace-docstr] (content (expand-links (:doc ns)))
 ;;     [:span#var-link] (add-ns-vars ns)
 ;;     [:span#subspace] (if-let [subspaces (seq (:subspaces ns))]
 ;;                        (clone-for [s subspaces]
-;;                          #(at % 
+;;                          #(at %
 ;;                             [:span#name] (content (:short-name s))
 ;;                             [:span#sub-var-link] (add-ns-vars s))))
 ;;     [:span#see-also] (see-also-links ns)
@@ -84,13 +84,13 @@ global index files."
 
 (defn namespace-overview [project ns one-namespace? template]
   (at template
-      [:.namespace-name :a] 
+      [:.namespace-name :a]
       (do->
-       (set-attr :href (str "http://clojure.github.com/" project "/"
+       (set-attr :href (str "http://clojure.github.io/" project "/"
                             (if one-namespace? "index.html" (str (:name ns) "-api.html"))))
        (content (:name ns)))
       [:.author-line] (when (:author ns)
-                        #(at % [:.author-name] 
+                        #(at % [:.author-name]
                              (content (:author ns))))
       [:pre.namespace-docstr] (content (expand-links (:doc ns)))
       [:.ns-added] (when (:added ns)
@@ -110,7 +110,7 @@ global index files."
                 (at %
                     [:.project-tag] (content project)
                     [:.project-description] description
-                    [:.api-link] (set-attr :href (str "http://clojure.github.com/" project "/"))
+                    [:.api-link] (set-attr :href (str "http://clojure.github.io/" project "/"))
                     [:div.namespace-entry] (clone-for
                                             [ns namespaces]
                                             (fn [node]
@@ -123,12 +123,12 @@ global index files."
                nil
                (make-overview-content project-info)))
 
-(defn vars-by-letter 
-  "Produce a lazy seq of two-vectors containing the letters A-Z and Other with all the 
+(defn vars-by-letter
+  "Produce a lazy seq of two-vectors containing the letters A-Z and Other with all the
 vars in project-info that begin with that letter"
   [vars]
   (let [chars (conj (into [] (map #(str (char (+ 65 %))) (range 26))) "Other")
-        var-map (apply merge-with conj 
+        var-map (apply merge-with conj
                        (into {} (for [c chars] [c []]))
                        (for [v vars]
                          {(or (re-find #"[A-Z]" (-> v :name .toUpperCase))
@@ -141,7 +141,7 @@ vars in project-info that begin with that letter"
   (if-let [doc (:doc v)]
     (let [len (min (count doc) n)
           suffix (if (< len (count doc)) "..." ".")]
-      (str (.replaceAll 
+      (str (.replaceAll
             (.replaceFirst (.substring doc 0 len) "^[ \n]*" "")
             "\n *" " ")
            suffix))
@@ -155,11 +155,11 @@ vars in project-info that begin with that letter"
     #(at %
          [:a] (do->
                (set-attr :href
-                         (str "http://clojure.github.com/" (:project v) "/"
+                         (str "http://clojure.github.io/" (:project v) "/"
                               (if (:one-namespace? v) "index.html" (str ns-name "-api.html"))
                               "#" ns-name "/" (:name v)))
                (content (:name v)))
-         [:#line-content] (content 
+         [:#line-content] (content
                            (cl-format nil "~vt~a~vt~a~vt~a~%"
                                       (- 29 overhead)
                                       (str (when (:dynamic v) "dynamic ") (:var-type v))
@@ -185,9 +185,8 @@ vars in project-info that begin with that letter"
                nil
                (make-index-content (vars-by-letter vars))))
 
-(defn make-all-pages 
+(defn make-all-pages
   ([project-info]
      (let [master-toc (make-master-toc project-info)]
        (make-overview project-info master-toc)
        (make-index-html (flatten-vars project-info) master-toc))))
-

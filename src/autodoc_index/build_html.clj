@@ -22,7 +22,7 @@ global index files."
 (def overview-file-template (str template-directory overview-file))
 (def index-html-file-template (str template-directory index-html-file))
 
-(def output-directory "../autodoc-work-area/clojure.github.com")
+(def output-directory "../autodoc-work-area/clojure.github.io")
 
 (deftemplate page layout-file
   [title master-toc local-toc page-content]

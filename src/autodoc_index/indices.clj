@@ -12,10 +12,13 @@
      (cl-format nil "https://api.github.com/~:[users~;orgs~]/~a"
                 org? user-or-org)))
 (defn repos
-  [base auth-str]
-  (let [url (str base "/repos?page=1&per_page=10000")
+  [user org? auth-str]
+  (let [url (str (user-url user org?) "/repos?page=1&per_page=10000")
         result (-> (client/get url {:accept :json :basic-auth auth-str}) :body
-                   (#(java.io.StringReader. %)) json/read-json)]
+                   (#(java.io.StringReader. %)) json/read-json)
+        ;; Github will return other users repos that you have rights to, so
+        ;; filter those out.
+        result (filter #(= user (-> % :owner :login)) result)]
     (for [r result] (:name r))))
 
 (defn branches [user repo auth-str]

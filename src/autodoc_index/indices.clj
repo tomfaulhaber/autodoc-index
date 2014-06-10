@@ -50,10 +50,16 @@
                                     :basic-auth auth-str})
               :body read-string))))))
 
+(defn get-auth-str
+  "Get the authentication info from the file ~/.github-auth. It should
+   be in the form username:password"
+  []
+  (str/trim-newline
+   (slurp (File. (System/getenv "HOME") ".github-auth"))))
+
 (defn all-indices-by-repo [user org?]
-  (let [auth-str (str/trim-newline
-                  (slurp (File. (System/getenv "HOME") ".github-auth")))] ; needs to contain "username:password"
-    (for [repo  (sort (repos (user-url user org?) auth-str))]
+  (let [auth-str (get-auth-str)]
+    (for [repo  (sort (repos user org? auth-str))]
       [repo (index-file user repo auth-str)])))
 
 (defn one-namespace?

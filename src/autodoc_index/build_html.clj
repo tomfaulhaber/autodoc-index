@@ -86,8 +86,7 @@ global index files."
   (at template
       [:.namespace-name :a]
       (do->
-       (set-attr :href (str "http://clojure.github.io/" project "/"
-                            (if one-namespace? "index.html" (str (:name ns) "-api.html"))))
+       (set-attr :href (:wiki-url ns))
        (content (:name ns)))
       [:.author-line] (when (:author ns)
                         #(at % [:.author-name]
@@ -154,10 +153,7 @@ vars in project-info that begin with that letter"
         doc-len (+ 50 (min 0 (- 18 (count ns-name))))]
     #(at %
          [:a] (do->
-               (set-attr :href
-                         (str "http://clojure.github.io/" (:project v) "/"
-                              (if (:one-namespace? v) "index.html" (str ns-name "-api.html"))
-                              "#" ns-name "/" (:name v)))
+               (set-attr :href (:wiki-url v))
                (content (:name v)))
          [:#line-content] (content
                            (cl-format nil "~vt~a~vt~a~vt~a~%"

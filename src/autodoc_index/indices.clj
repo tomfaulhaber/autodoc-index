@@ -82,7 +82,7 @@ repo name added on a :project key."
      (apply concat
             (for [[project data] indices]
               (do
-                (for [v (:vars data)]
+                (for [v (:vars data) :when (:name v)] ; skip specs for now
                   (assoc v
                     :project project
                     :one-namespace? (one-namespace? data))))))))
